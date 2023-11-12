@@ -39,7 +39,7 @@ bool bst_search(bst_node_t *tree, char key, int *value) {
   {
     if (tree->key == key) // pokud je momentalni uzel shodny s klicem, tak jsme nasli hledany prvek
     {
-      (*value) = tree->value;
+      (*value) = tree->value; // ulozime hodnotu 
       return true;
     }
     else
@@ -85,7 +85,7 @@ void bst_insert(bst_node_t **tree, char key, int value) {
       currentRoot->left = NULL;
       currentRoot->right = NULL;
 
-      (*tree) = currentRoot;
+      (*tree) = currentRoot; // vlozime currentRoot do uzlu stromu
     }
     if (key == currentRoot->key) // pokud uzel se zadanym klicem existuje, nahradime jeho hodnotu
     {
@@ -159,7 +159,7 @@ void bst_delete(bst_node_t **tree, char key) {
     {
       if ((*tree)->left == NULL && (*tree)->right == NULL) // kontrola jake ma potomky, pripadne jestli vubec nejake ma
       {
-        free((*tree));
+        free((*tree)); // nema potomky, muzeme rovnou odstranit
         (*tree) = NULL;
       }
       else

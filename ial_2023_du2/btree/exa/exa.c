@@ -12,88 +12,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// /*
-//  * Vyhledání uzlu v stromu.
-//  *
-//  * V případě úspěchu vrátí funkce hodnotu true a do proměnné value zapíše
-//  * hodnotu daného uzlu. V opačném případě funkce vrátí hodnotu false a proměnná
-//  * value zůstává nezměněná.
-//  * 
-//  */
-// bool exa_bst_search(bst_node_t *tree, char key, int *value) {
-//   if (tree != NULL) // prohledavame strom pouze pokud ma nejake prvky
-//   {
-//     if (tree->key == key) // pokud je momentalni uzel shodny s klicem, tak jsme nasli hledany prvek
-//     {
-//       (*value) = tree->value;
-//       return true;
-//     }
-//     else
-//     {
-//       if (key < tree->key) // jestlize je klic mensi nez momentalni uzel, tak prohledame levy podstrom
-//       {
-//         return exa_bst_search(tree->left, key, value);
-//       }
-//       else // jestlize je vetsi, prohledame pravy podstrom
-//       {
-//         return exa_bst_search(tree->right, key, value);
-//       }
-//     }
-//   }
-//   return false; // jestlize uzel nebyl nalezen, vratime false
-// }
-
-// /*
-//  * Vložení uzlu do stromu.
-//  *
-//  * Pokud uzel se zadaným klíčem už ve stromu existuje, zvyšte jeho hodnotu.
-//  * Jinak vložte nový listový uzel.
-//  *
-//  * Výsledný strom musí splňovat podmínku vyhledávacího stromu — levý podstrom
-//  * uzlu obsahuje jenom menší klíče, pravý větší. 
-//  *
-//  */
-// void exa_bst_insert(bst_node_t **tree, char key) {
-//   if (tree != NULL)
-//   {
-//     bst_node_t* currentRoot = (*tree); // aktualni uzel
-//     if (currentRoot == NULL) // pokud je strom prazdny, tak muzeme rovnou uzel pridat
-//     {
-//       currentRoot = malloc(sizeof(bst_node_t));
-//       if (currentRoot == NULL) // chyba pri alokaci
-//       {
-//         return;
-//       }
-//       // ulozime do currentRoot vsechna data
-//       currentRoot->key = key;
-//       currentRoot->value = 1;
-//       currentRoot->left = NULL;
-//       currentRoot->right = NULL;
-
-//       (*tree) = currentRoot;
-//     }
-//     if (key == currentRoot->key) // pokud uzel se zadanym klicem existuje, zvysime jeho hodnotu
-//     {
-//         int value = 0;
-//         bst_search(*tree, key, &value);
-//         value++;
-//       currentRoot->value = value;
-//       return; //
-//     }
-//     else
-//     {
-//       if (key < currentRoot->key) // pokud je klic mensi nez momentalni uzel, budeme vkladat do jeho leveho podstromu
-//       {
-//         exa_bst_insert(&(currentRoot->left), key);
-//       }
-//       else // jinak budeme vkladat do jeho praveho podstromu
-//       {
-//         exa_bst_insert(&(currentRoot->right), key);
-//       } 
-//     }
-//   }
-// }
-
 int myToLower(char c) // predela velke znaky na male
 {
     return (c >= 'A' && c <='Z') ? (c + 32) : (c);    
@@ -107,67 +25,6 @@ int isSymbol(char c) // predela znaky krome a-z a mezery na '_', funkce pocita s
         return c;
     }
     return c;
-}
-
-void HeightBT (bst_node_t *tree, int *max) // funkce na urceni vysky stromu
-{
-    int heightLeft, heightRight;
-    if (tree != NULL)
-    {
-        HeightBT(tree->left, &heightLeft);
-        HeightBT(tree->right, &heightRight);
-        if (heightLeft > heightRight) 
-        {
-            *max = heightLeft + 1;
-        } 
-        else 
-        {
-            *max = heightRight + 1;
-        }
-    } // if ptr != NULL
-    else 
-    {
-        *max = 0;
-    }
-}
-
-bst_node_t* CopyR (bst_node_t* tree) // rekurzivni kopirovani stromu
-{
-    bst_node_t* newTree;
-    if (tree != NULL){
-        newTree = malloc(sizeof(bst_node_t));
-        // if (newTree == NULL) // chyba alokace
-        // {
-        //     return;
-        // }
-        newTree->key = tree->key;
-        newTree->value = tree->value;
-        newTree->left = CopyR(tree->left);
-        newTree->right = CopyR(tree->right);
-        return newTree;
-    } 
-    else 
-    {
-        return NULL;
-    }
-}
-
-bool TestWBT (bst_node_t *tree, int *count) // test, zda-li je strom vahove vyvazeny
-{
-    bool left_balanced, right_balanced;
-    int left_count, right_count;
-    if (tree != NULL)
-    {
-        left_balanced = TestWBT(tree->left, &left_count);
-        right_balanced = TestWBT(tree->right, &right_count);
-        *count = left_count + right_count + 1;
-        return (left_balanced && right_balanced && (abs(left_count - right_count) <= 1));
-    }
-    else
-    {
-        *count = 0;
-        return true;
-    }
 }
 
 /**
@@ -193,56 +50,28 @@ void letter_count(bst_node_t **tree, char *input) {
     while (*input != '\0')
     {
         char currentInput = *input;
+        // prevod znaku na male pismeno a pokud to bude jiny symbol nez ' ' nebo pismeno, tak nahradi znakem '_'
         currentInput = myToLower(currentInput);
         currentInput = isSymbol(currentInput);
         int value = 0;
-        bst_search((*tree), currentInput, &value);
-        bst_insert(tree, currentInput, (value + 1));
+        bst_search((*tree), currentInput, &value); // najdeme si momentalni hodnotu s pocetnosti vyskytu daneho znaku
+        bst_insert(tree, currentInput, (value + 1)); // vkladame znak, pokud se tam vyskytoval, tak zvysime jeho hodnotu, aby odpovidala poctu znaku v retezci
         input++;
     }
 
 }
 
-// bst_items_t* exa_bst_init_items() {
-//   bst_items_t* items = malloc(sizeof(bst_items_t));
-//   items->capacity = 0;
-//   items->nodes = NULL;
-//   items->size = 0;
-//   return items;
-// }
-
-void exa_bst_print_items(bst_items_t *items) {
-  printf("Traversed items:\n");
-    for (int i = 0; i < items->size; i++)
-    {
-        bst_print_node(items->nodes[i]);
-    }
-  printf("\n");
-}
-
-// void exa_bst_reset_items (bst_items_t *items) {
-//   if(items != NULL) {
-//     if (items->capacity > 0)
-//     {
-//       free(items->nodes);
-//     }
-//     items->capacity = 0;
-//     items->size = 0;
-//   }
-// }
-
+// pomocna funkce na rekurzivni vybalancovani stromu
 bst_node_t* createBalancedTree(bst_items_t* balancedItemsArray, int start, int end)
 {
-    if (start > end)
+    if (start > end) // pokud se rekurzivne stane, ze zacatek bude vetsi nez konec, tak to znamena, ze je tahle cast stromu vybalancovana
     {
         return NULL;
     }
-    int mid = (start + end)/2;
-    bst_node_t* treeRoot = balancedItemsArray->nodes[mid];
-    printf("Momentalne zpracovavany uzel: %c\n", treeRoot->key);
-    // printf("")
-    treeRoot->left = createBalancedTree(balancedItemsArray, start, mid - 1);
-    treeRoot->right = createBalancedTree(balancedItemsArray, mid + 1, end);
+    int mid = (start + end) / 2; // najdeme si stred pole
+    bst_node_t* treeRoot = balancedItemsArray->nodes[mid]; // uzel se kterym chceme pracovat se nachazi v poli na indexu mid
+    treeRoot->left = createBalancedTree(balancedItemsArray, start, mid - 1); // rekurzivni volani pro levy podstrom
+    treeRoot->right = createBalancedTree(balancedItemsArray, mid + 1, end); // rekurzivni volani pro pravy podstrom
     return treeRoot;
 }
 
@@ -257,18 +86,16 @@ bst_node_t* createBalancedTree(bst_items_t* balancedItemsArray, int start, int e
  * Pro implementaci si můžete v tomto souboru nadefinovat vlastní pomocné funkce. Není nutné, aby funkce fungovala *in situ* (in-place).
 */
 void bst_balance(bst_node_t **tree) {
-    // nakonec musime stary strom disposenout
-
     bst_node_t *new;
+    // inicializace balanced_items, do kterych se bude ukladat serazeny strom
     bst_items_t* balanced_items = malloc(sizeof(bst_items_t));
     balanced_items->capacity = 0;
     balanced_items->nodes = NULL;
     balanced_items->size = 0;
-    bst_inorder(*tree, balanced_items);
-    new = createBalancedTree(balanced_items, 0, balanced_items->size - 1);
-    exa_bst_print_items(balanced_items); // ted je to ocividne spravne, inorder funguje
+    bst_inorder(*tree, balanced_items); // serazeni prvku pomoci funkce inOrder, prvky jsou ulozene v poli uzlu v balanced_items->nodes
+    new = createBalancedTree(balanced_items, 0, balanced_items->size - 1); // vytvoreni noveho vyvazeneho stromu
     *tree = new;
-    if(balanced_items != NULL) {
+    if(balanced_items != NULL) { // vratime balanced_items do puvodniho stavu
         if (balanced_items->capacity > 0)
         {
             free(balanced_items->nodes);
@@ -276,6 +103,5 @@ void bst_balance(bst_node_t **tree) {
         balanced_items->capacity = 0;
         balanced_items->size = 0;
     }
-    free(balanced_items);
-    // bst_dispose(&(*tree));
+    free(balanced_items); // uvolneni naalokovane pameti pro balanced_items
 }

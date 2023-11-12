@@ -112,7 +112,6 @@ void bst_insert(bst_node_t **tree, char key, int value) {
             newRoot->left = NULL;
             newRoot->right = NULL;
             currentRoot->left = newRoot; // propojime momentalni uzel s novym
-            // free(newRoot);
           }
           else // jestli jeste uzel nalevo prazdny nebyl, tak se posuneme na levy podstrom
           {
@@ -201,14 +200,14 @@ void bst_delete(bst_node_t **tree, char key) {
       }
       else
       {
-        if (key < currentRoot->key)
+        if (key < currentRoot->key) // jestlize je klic mensi, nez klic aktualniho uzlu
         {
           previousRoot = currentRoot;
           currentRoot = currentRoot->left;
         }
         else
         {
-          if (key > currentRoot->key)
+          if (key > currentRoot->key) // jestlize je klic vetsi, nez klic aktualniho uzlu
           {
             previousRoot = currentRoot;
             currentRoot = currentRoot->right;
@@ -309,22 +308,21 @@ void bst_dispose(bst_node_t **tree) {
     {
       return;
     }
-    stack_bst_init(stack);
-    stack_bst_push(stack, (*tree));    
+    stack_bst_init(stack); 
     
     while ((*tree) != NULL || stack_bst_empty(stack) == false) // prochazime strom do doby, nez je prazdny a uvolneny z pameti
     {
-      bst_node_t* currentRoot = (*tree);
-      if (currentRoot == NULL && stack_bst_empty(stack) == false) // pokud je uzel prazdny
+      if ((*tree) == NULL && stack_bst_empty(stack) == false) // pokud je uzel prazdny
       {
-        currentRoot = stack_bst_pop(stack); // ulozime si vrchni prvek ze zasobniku
+        (*tree) = stack_bst_pop(stack); // ulozime si vrchni prvek ze zasobniku
       }
       else
       {
-        if (currentRoot->right != NULL) // pravy podstrom si ulozime na zasobnik pro pozdejsi zpracovani, pokud existuje
+        if ((*tree)->right != NULL) // pravy podstrom si ulozime na zasobnik pro pozdejsi zpracovani, pokud existuje
         {
-          stack_bst_push(stack, currentRoot->right);
+          stack_bst_push(stack, (*tree)->right);
         }
+        bst_node_t* currentRoot = (*tree);
         (*tree) = (*tree)->left;
         free(currentRoot);
         currentRoot = NULL;
@@ -422,7 +420,7 @@ void bst_inorder(bst_node_t *tree, bst_items_t *items) {
     while (stack_bst_empty(stack) == false) // dokud se nevyprazdni zasobnik
     {
       tree = stack_bst_pop(stack);
-      bst_add_node_to_items(tree, items);
+      bst_add_node_to_items(tree, items); // pridame na vystup
       bst_leftmost_inorder(tree->right, stack);
     }
     free(stack);

@@ -34,7 +34,7 @@ int get_hash(char *key) {
 void ht_init(ht_table_t *table) {
    if(table != NULL)
   {
-    for(int i = 0; i < HT_SIZE; i++)
+    for(int i = 0; i < HT_SIZE; i++) // inicializujeme tabulku hodnotami NULL
     {
       (*table)[i] = NULL;
     }
@@ -51,7 +51,7 @@ ht_item_t *ht_search(ht_table_t *table, char *key) {
   if (!(table == NULL || key == NULL))
   {
     int index = get_hash(key); // ziskani indexu daneho hashovaci funkci
-    ht_item_t* tmp = (*table)[index];
+    ht_item_t* tmp = (*table)[index]; // ulozime si aktualni prvek do pomocne promenne
     while(tmp != NULL)
     {
       if(strcmp(key, tmp->key) == 0)
@@ -75,13 +75,12 @@ ht_item_t *ht_search(ht_table_t *table, char *key) {
 void ht_insert(ht_table_t *table, char *key, float value) {
   if (!(table == NULL || key == NULL))
   {
-    // int index = get_hash(key);
     ht_item_t* currentItem = ht_search(table, key);
-    if(currentItem != NULL) // pokud search funkce vrati NULL, znamena to, ze p$
+    if(currentItem != NULL) // pokud search funkce vrati NULL, znamena to, ze prvek se v tabulce nenachazi
     {
       currentItem->value = value; // pokud byl nalezen, nahradime jeho hodnotu 
     }
-    else
+    else //pridavame prvek, ktery jeste v tabulce nebyl
     {
       ht_item_t* newItem = malloc(sizeof(ht_item_t));
       if (newItem == NULL)
@@ -116,7 +115,7 @@ void ht_insert(ht_table_t *table, char *key, float value) {
 float *ht_get(ht_table_t *table, char *key) {
   if (!(table == NULL || key == NULL))
   {
-    ht_item_t* searchedItem = ht_search(table, key);
+    ht_item_t* searchedItem = ht_search(table, key); // pokud se prvek v tabulce nachazi, tak se ulozi do searchedItem, jinak tam bude NULL
     if (searchedItem != NULL)
     {
       return &(searchedItem->value); // v pripade ze funkce ht_search polozku nasla, tak vracime ukazatel na hodnotu prvku
@@ -140,7 +139,7 @@ void ht_delete(ht_table_t *table, char *key) {
     ht_item_t* currentItem = (*table)[index];
     ht_item_t* previousItem = NULL;
     
-    while (currentItem != NULL)
+    while (currentItem != NULL) // pokud existuje prvek
     {
       if (strcmp(currentItem->key, key) == 0)
       {
@@ -156,7 +155,7 @@ void ht_delete(ht_table_t *table, char *key) {
         free(currentItem);
         return;
       }
-      // posun na ldasi prvky
+      // posun na dalsi prvky
       previousItem = currentItem;
       currentItem = currentItem->next;
     }
@@ -172,11 +171,12 @@ void ht_delete(ht_table_t *table, char *key) {
 void ht_delete_all(ht_table_t *table) {
   if (table != NULL)
   {
-    for (int i = 0; i < HT_SIZE; i++)
+    for (int i = 0; i < HT_SIZE; i++) // prochazime vsechny prvky
     {
       ht_item_t* nextItem;
-      while ((*table)[i] != NULL)
+      while ((*table)[i] != NULL) // dokud prvek existuje
       {
+        // posouvame se dal a mazeme naalokovanou pamet
         nextItem = (*table)[i]->next;
         free((*table)[i]->key);
         free((*table)[i]);
